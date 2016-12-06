@@ -110,7 +110,7 @@ func wrap(h func(context.Context, http.ResponseWriter, *http.Request) error) fun
 				)
 				w.Header().Set("Content-Type", e.ContentType())
 				w.Header().Set("X-Content-Type-Options", "nosniff")
-				w.WriteHeader(code)
+				w.WriteHeader(e.Code())
 				w.Write([]byte(e.Message()))
 			default:
 				errlog.Error(
