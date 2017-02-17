@@ -108,7 +108,7 @@ func wrap(h func(context.Context, http.ResponseWriter, *http.Request) error) fun
 					"error", e.Error(),
 					"stack", e.Stack(),
 				)
-				http.Error(w, http.StatusText(e.Code()), e.Code())
+				http.Error(w,e.Error(), e.Code())
 			default:
 				errlog.Error(
 					"req_id", reqid,
