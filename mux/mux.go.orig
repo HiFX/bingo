@@ -108,10 +108,14 @@ func wrap(h func(context.Context, http.ResponseWriter, *http.Request) error) fun
 					"error", e.Error(),
 					"stack", e.Stack(),
 				)
+<<<<<<< HEAD
+				http.Error(w,e.Error(), e.Code())
+=======
 				w.Header().Set("Content-Type", e.ContentType())
 				w.Header().Set("X-Content-Type-Options", "nosniff")
 				w.WriteHeader(e.Code())
 				w.Write([]byte(e.Message()))
+>>>>>>> 2074d6943436e30f51bee5c41b5bfc22f95cf087
 			default:
 				errlog.Error(
 					"req_id", reqid,
