@@ -2,12 +2,15 @@ package bingo
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
+	"reflect"
 	"time"
 
 	"github.com/fatih/color"
 	"github.com/hifx/banner"
 	"github.com/hifx/bingo/infra/log"
+	"github.com/hifx/errgo"
 	"github.com/hifx/graceful"
 	"goji.io/pat"
 	"golang.org/x/net/context"
@@ -59,4 +62,26 @@ func JSONW(w http.ResponseWriter, status int, l log.Logger, data interface{}) {
 	if nil != err {
 		l.Error("web.ioerror", err.Error())
 	}
+}
+
+//Close an io.Closer object by handling it's error.
+// Example:
+// 		h, err := app.Init(env)
+// 		defer utils.Close(h, conf.Config.Log())
+func Close(closer io.Closer, log log.Logger) {
+	if err := closer.Close(); err != nil {
+		log.Crit("Failed to Close Object: %#v\n Error: %s ", err.Error())
+	}
+}
+
+// ReadBody decodes request.Body into the destination.
+//  Warning: des should be a pointer
+func ReadBody(request *http.Request, des interface{}, msg string) error {
+	if kind := reflect.TypeOf(des).Kind(); kind != reflect.Ptr {
+		return errgo.Errorf("des should be a pointer: but got %#v", kind)
+	}
+	if err := json.NewDecoder(request.Body).Decode(des); err != nil {
+		return errgo.Errorf("Failed to decode request body,Error: %s", err.Error())
+	}
+	return nil
 }
